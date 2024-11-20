@@ -5,5 +5,8 @@
     "standard",
     "prettier",
     "plugin:tailwindcss/recommended"
-  ]
+  ],
+  "rules": {
+    "tailwindcss/no-custom-classname": "off"
+  }
 }
