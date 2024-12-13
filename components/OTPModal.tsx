@@ -1,4 +1,5 @@
 "use client";
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -8,6 +9,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+
 import {
   InputOTP,
   InputOTPGroup,
@@ -16,7 +18,7 @@ import {
 import React, { useState } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { sendEmailOTP, verifySecret } from "@/lib/actions/user.actions";
+import { verifySecret, sendEmailOTP } from "@/lib/actions/user.actions";
 import { useRouter } from "next/navigation";
 
 const OtpModal = ({
@@ -29,30 +31,37 @@ const OtpModal = ({
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(true);
   const [password, setPassword] = useState("");
-  const [isloading, setIsloading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    setIsloading(true);
+    setIsLoading(true);
+
+    console.log({ accountId, password });
+
     try {
       const sessionId = await verifySecret({ accountId, password });
-      if (sessionId) {
-        router.push("/");
-      }
+
+      console.log({ sessionId });
+
+      if (sessionId) router.push("/");
     } catch (error) {
       console.log("Failed to verify OTP", error);
     }
-    setIsloading(false);
+
+    setIsLoading(false);
   };
+
   const handleResendOtp = async () => {
     await sendEmailOTP({ email });
   };
+
   return (
     <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
       <AlertDialogContent className="shad-alert-dialog">
         <AlertDialogHeader className="relative flex justify-center">
           <AlertDialogTitle className="h2 text-center">
-            Enter your OTP
+            Enter Your OTP
             <Image
               src="/assets/icons/close-dark.svg"
               alt="close"
@@ -67,6 +76,7 @@ const OtpModal = ({
             <span className="pl-1 text-brand">{email}</span>
           </AlertDialogDescription>
         </AlertDialogHeader>
+
         <InputOTP maxLength={6} value={password} onChange={setPassword}>
           <InputOTPGroup className="shad-otp">
             <InputOTPSlot index={0} className="shad-otp-slot" />
@@ -77,6 +87,7 @@ const OtpModal = ({
             <InputOTPSlot index={5} className="shad-otp-slot" />
           </InputOTPGroup>
         </InputOTP>
+
         <AlertDialogFooter>
           <div className="flex w-full flex-col gap-4">
             <AlertDialogAction
@@ -85,7 +96,7 @@ const OtpModal = ({
               type="button"
             >
               Submit
-              {isloading && (
+              {isLoading && (
                 <Image
                   src="/assets/icons/loader.svg"
                   alt="loader"
@@ -95,6 +106,7 @@ const OtpModal = ({
                 />
               )}
             </AlertDialogAction>
+
             <div className="subtitle-2 mt-2 text-center text-light-100">
               Didn&apos;t get a code?
               <Button
@@ -103,7 +115,7 @@ const OtpModal = ({
                 className="pl-1 text-brand"
                 onClick={handleResendOtp}
               >
-                Click here to resend
+                Click to resend
               </Button>
             </div>
           </div>
@@ -112,4 +124,5 @@ const OtpModal = ({
     </AlertDialog>
   );
 };
+
 export default OtpModal;
